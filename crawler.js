@@ -22,7 +22,7 @@ var CrawlerCallback = function (error, result, $) {
         url = CrawlerController.normalizeUrl(url);
 
         if (found.indexOf(url) === -1) {
-            found.push({url: url});
+            found.push(url);
         }
 
         url = null;
