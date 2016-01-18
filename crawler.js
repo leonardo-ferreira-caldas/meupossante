@@ -11,6 +11,7 @@ var CrawlerCallback = function (error, result, $) {
     if (error || $ == undefined || !result.uri) return;
 
     result.uri = CrawlerController.normalizeUrl(result.uri);
+    console.log(result.uri);
 
     $('a').each(function(index, a) {
         var url = $(a).attr('href');
@@ -31,8 +32,6 @@ var CrawlerCallback = function (error, result, $) {
             json = null;
         });
     });
-
-    error = result = $ = null;
 
 };
 
