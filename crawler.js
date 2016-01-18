@@ -5,7 +5,7 @@ var CrawlerProvider = require('./crawler_provider');
 var CrawlerController = require('./controllers/CrawlerController');
 var CarroController   = require('./controllers/CarroController');
 var found = [];
-var maxConnections = 25;
+var maxConnections = 15;
 
 var CrawlerCallback = function (error, result, $) {
         
@@ -53,7 +53,7 @@ var CrawlerDrained = function() {
             callback: CrawlerCallback
         });
 
-        CrawlerController.fetch(200, function(url) {
+        CrawlerController.fetch(400, function(url) {
             c.queue({
                 url: url,
                 timeout: 5000
