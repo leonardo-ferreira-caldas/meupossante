@@ -21,7 +21,9 @@ var CrawlerCallback = function (error, result, $) {
 
         url = CrawlerController.normalizeUrl(url);
 
-        found.push({url: url});
+        if (found.indexOf(url) === -1) {
+            found.push({url: url});
+        }
 
         url = null;
 

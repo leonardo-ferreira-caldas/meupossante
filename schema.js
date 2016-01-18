@@ -57,7 +57,7 @@ var Carro = mongoose.model('carro', new Schema({
 }, { collection: 'carro' }));
 
 var Crawler = mongoose.model('crawler', new Schema({
-    url: { type: String, required: true, trim: true, unique : true },
+    url: { type: String, required: true, trim: true, index: true, unique : true },
     ind_visited: { type: Boolean, default: false }
 }, { collection: 'crawler' }));
 
