@@ -3,7 +3,7 @@
 var db = require('./../schema');
 
 exports.up = function(next) {
-    db.marca.create([
+    db.marca.collection.insert([
         {descricao: 'Acura'},
         {descricao: 'Agrale'},
         {descricao: 'Alfa Romeo'},

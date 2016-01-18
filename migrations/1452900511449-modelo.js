@@ -12,7 +12,7 @@ exports.up = function(next) {
             marcasPorDescricao[marcas[i].descricao] = marcas[i]._id;
         }
 
-        db.modelo.create([
+        db.modelo.collection.insert([
             {fk_marca: marcasPorDescricao["Acura"], descricao: "LEGEND"},
             {fk_marca: marcasPorDescricao["Agrale"], descricao: "FURGOVAN"},
             {fk_marca: marcasPorDescricao["Agrale"], descricao: "MARRUÁ"},

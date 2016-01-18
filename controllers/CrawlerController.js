@@ -5,7 +5,8 @@ var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
 exports.create = function(foundUrls, callback) {
     console.log(Data.getFormattedDate() + " / Creating links: " + foundUrls.length);
-    db.crawler.create(foundUrls.map(function(value) {
+
+    db.crawler.collection.insert(foundUrls.map(function(value) {
         return {url: value};
     }), function(err) {
         console.log(Data.getFormattedDate() + " / Links created!");
@@ -20,6 +21,7 @@ exports.fetch = function(lengthOffset, callback) {
         var ids = results.map(function(value) {
             return value._id;
         });
+
 
         db.crawler.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true }, function(err, updated) {
             if (err) throw err;
@@ -38,5 +40,16 @@ exports.isValidUrl = function(url) {
 };
 
 exports.normalizeUrl = function(url) {
-    return url.toString().replace("https://www.webmotors.com.br/anunciante/login?action=salvaranuncio&returnUrl=", "").trim();
+    var stringsToRemove = [
+        "https://www.webmotors.com.br/anunciante/login?action=salvaranuncio&returnUrl=",
+        "http://www.webmotors.com.br/anunciante/login?action=salvaranuncio&returnUrl=",
+        "https://www.webmotors.com.br/anunciante/login?action=login&returnUrl=",
+        "http://www.webmotors.com.br/anunciante/login?action=login&returnUrl="
+    ];
+
+    for (var i = 0; i < stringsToRemove.length; i++) {
+        url.toString().replace(stringsToRemove[i], "").trim();
+    }
+
+    return url;
 };

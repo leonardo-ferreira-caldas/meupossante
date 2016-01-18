@@ -15,7 +15,7 @@ exports.up = function(next) {
             estadoSigla[estados[i].sigla] = estados[i]._id;
         }
 
-        db.cidade.create([
+        db.cidade.collection.insert([
             {nome_cidade: "Afonso Cláudio", fk_estado: estadoSigla["ES"]},
             {nome_cidade: "Água Doce do Norte", fk_estado: estadoSigla["ES"]},
             {nome_cidade: "Águia Branca", fk_estado: estadoSigla["ES"]},
