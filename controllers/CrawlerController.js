@@ -1,9 +1,12 @@
 var db = require('./../schema');
+var Data = require('./../date');
 
 var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
 exports.create = function(foundUrls, callback) {
+    console.log(Data.getFormattedDate() + " / Creating links: " + foundUrls.length);
     db.crawler.create(foundUrls, function(err) {
+        console.log(Data.getFormattedDate() + " / Links created!");
         callback();
     });
 };
