@@ -46,7 +46,8 @@ exports.normalizeUrl = function(url) {
         "https://www.webmotors.com.br/anunciante/login?action=salvaranuncio&returnUrl=",
         "http://www.webmotors.com.br/anunciante/login?action=salvaranuncio&returnUrl=",
         "https://www.webmotors.com.br/anunciante/login?action=login&returnUrl=",
-        "http://www.webmotors.com.br/anunciante/login?action=login&returnUrl="
+        "http://www.webmotors.com.br/anunciante/login?action=login&returnUrl=",
+        ":80"
     ];
 
     for (var i = 0; i < stringsToRemove.length; i++) {
