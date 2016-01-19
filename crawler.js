@@ -55,7 +55,7 @@ var CrawlerDrained = function() {
             callback: CrawlerCallback
         });
 
-        CrawlerController.fetch(400, function(url) {
+        CrawlerController.fetch(4000, function(url) {
             c.queue({
                 url: url,
                 timeout: 5000

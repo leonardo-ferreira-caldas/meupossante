@@ -3,7 +3,8 @@
 var db = require('./../schema');
 
 exports.up = function(next) {
-  next();
+    db.crawler.collection.createIndex({'url': 1}, {unique: true});
+    next();
 };
 
 exports.down = function(next) {
@@ -11,4 +12,5 @@ exports.down = function(next) {
         if (err) throw err;
         next();
     })
+    db.crawler.collection.drop();
 };
