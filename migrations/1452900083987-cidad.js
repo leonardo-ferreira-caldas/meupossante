@@ -4,7 +4,6 @@ var db = require('./../schema');
 var Data = require('./../date');
 
 exports.up = function(next) {
-    console.log(Data.getFormattedDate() + " / Starting Cidades migration...");
 
     db.estado.find(function(err, estados) {
         if (err) throw err;
@@ -5617,7 +5616,6 @@ exports.up = function(next) {
         ],
         function(err) {
             if (err) throw err;
-            console.log(Data.getFormattedDate() + " / Finished Cidades migration!");
             next();
         });
 

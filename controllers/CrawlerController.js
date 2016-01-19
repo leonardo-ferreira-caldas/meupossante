@@ -7,7 +7,7 @@ exports.create = function(foundUrls, callback) {
     console.log(Data.getFormattedDate() + " / Creating links: " + foundUrls.length);
 
     db.crawler.collection.insert(foundUrls.map(function(value) {
-        return {url: value};
+        return {url: value, ind_visted: false};
     }), function(err) {
         console.log(Data.getFormattedDate() + " / Links created!");
         callback();
