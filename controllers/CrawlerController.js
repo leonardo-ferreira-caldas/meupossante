@@ -15,7 +15,7 @@ exports.create = function(foundUrls, callback) {
         foundUrls = null;
         callback();
 
-    });
+    }));
 
 };
 
