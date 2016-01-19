@@ -12,6 +12,8 @@ exports.create = function(foundUrls, callback) {
 
     db.crawler.collection.insert(rows, {ordered: false});
 
+    rows = null;
+
     callback();
 
 };
