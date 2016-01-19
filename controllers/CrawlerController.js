@@ -5,9 +5,10 @@ var Arr = require('./../array');
 var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
 exports.create = function(foundUrls, callback) {
-    console.log(Data.getFormattedDate() + " / Creating links: " + foundUrls.length);
 
-    db.crawler.find({url: {$in: foundUrls}}, function(err, result) {
+    db.crawler.find({url: {$in: foundUrls}}).hint("url_text").exec(function(err, result) {
+
+        console.log(Data.getFormattedDate() + " / Creating links: " + result.length);
 
         for (var i = 0; i < result.length; i++) {
             foundUrls.remove(result[i].url);
