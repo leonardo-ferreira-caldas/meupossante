@@ -10,7 +10,7 @@ exports.up = function(next) {
 exports.down = function(next) {
     db.crawler.find().remove(function(err) {
         if (err) throw err;
+        db.crawler.collection.drop();
         next();
     })
-    db.crawler.collection.drop();
 };

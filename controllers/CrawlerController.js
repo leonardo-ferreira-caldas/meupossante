@@ -10,7 +10,7 @@ exports.create = function(foundUrls, callback) {
         return {url: value, ind_visited: false};
     });
 
-    db.crawler.collection.insertMany(rows, {ordered: false});
+    db.crawler.collection.insert(rows, {ordered: false});
 
     callback();
 
