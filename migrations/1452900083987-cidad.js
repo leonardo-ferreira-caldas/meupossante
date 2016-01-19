@@ -14,7 +14,7 @@ exports.up = function(next) {
             estadoSigla[estados[i].sigla] = estados[i]._id;
         }
 
-        db.cidade.collection.insert([
+        db.cidade.collection.insertMany([
             {nome_cidade: "Afonso Cláudio", fk_estado: estadoSigla["ES"]},
             {nome_cidade: "Água Doce do Norte", fk_estado: estadoSigla["ES"]},
             {nome_cidade: "Águia Branca", fk_estado: estadoSigla["ES"]},
@@ -5613,11 +5613,9 @@ exports.up = function(next) {
             {nome_cidade: "Monte Alegre", fk_estado: estadoSigla["RJ"]},
             {nome_cidade: "São Luiz do Paraitinga", fk_estado: estadoSigla["SP"]},
             {nome_cidade: "Aparecida D'Oeste", fk_estado: estadoSigla["SP"]}
-        ],
-        function(err) {
-            if (err) throw err;
+        ], {ordered: false});
+
             next();
-        });
 
     });
 };

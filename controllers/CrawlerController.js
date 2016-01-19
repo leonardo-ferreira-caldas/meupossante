@@ -6,13 +6,14 @@ var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 exports.create = function(foundUrls, callback) {
     console.log(Data.getFormattedDate() + " / Creating links: " + foundUrls.length);
 
-    db.crawler.collection.insert(foundUrls.map(function(value) {
+    var rows = foundUrls.map(function(value) {
         return {url: value, ind_visited: false};
-    }), function(err, result) {
-        console.log(Data.getFormattedDate() + " / Links created!");
-        console.log(result);
-        callback();
     });
+
+    db.crawler.collection.insertMany(rows, {ordered: false});
+
+    callback();
+
 };
 
 exports.fetch = function(lengthOffset, callback) {
