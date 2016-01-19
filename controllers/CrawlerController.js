@@ -50,7 +50,7 @@ exports.normalizeUrl = function(url) {
     ];
 
     for (var i = 0; i < stringsToRemove.length; i++) {
-        url.toString().replace(stringsToRemove[i], "").trim();
+        url = url.toString().replace(stringsToRemove[i], "").trim();
     }
 
     return url;
