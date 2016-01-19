@@ -6,17 +6,11 @@ var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
 exports.create = function(foundUrls, callback) {
 
-    db.crawler.find({$query: {url: {$in: foundUrls}}, $hint: "url_text"}).exec(function(err, result) {
+    console.log(Data.getFormattedDate() + " / Creating links: " + result.length);
 
-        console.log(Data.getFormattedDate() + " / Creating links: " + result.length);
-
-        for (var i = 0; i < result.length; i++) {
-            foundUrls.remove(result[i].url);
-        }
-
-        db.crawler.collection.insert(foundUrls.map(function(value) {
-            return {url: value, ind_visited: false};
-        }), {ordered: false});
+    db.crawler.create(foundUrls.map(function(value) {
+        return {url: value};
+    }, function(err, result) {
 
         foundUrls = null;
         callback();
