@@ -6,8 +6,6 @@ var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
 exports.create = function(foundUrls, callback) {
 
-    console.log(Data.getFormattedDate() + " / Creating links: " + result.length);
-
     db.crawler.create(foundUrls.map(function(value) {
         return {url: value};
     }, function(err, result) {
