@@ -1,20 +1,26 @@
 var db = require('./../schema');
 var Data = require('./../date');
+var Arr = require('./../array');
 
 var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
 exports.create = function(foundUrls, callback) {
     console.log(Data.getFormattedDate() + " / Creating links: " + foundUrls.length);
 
-    var rows = foundUrls.map(function(value) {
-        return {url: value, ind_visited: false};
+    db.crawler.find({url: {$in: foundUrls}}, function(err, result) {
+
+        for (var i = 0; i < result.length; i++) {
+            foundUrls.remove(result[i].url);
+        }
+
+        db.crawler.collection.insert(foundUrls.map(function(value) {
+            return {url: value, ind_visited: false};
+        }), {ordered: false});
+
+        foundUrls = null;
+        callback();
+
     });
-
-    db.crawler.collection.insert(rows, {ordered: false});
-
-    rows = null;
-
-    callback();
 
 };
 
