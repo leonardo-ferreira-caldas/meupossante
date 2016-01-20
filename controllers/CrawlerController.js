@@ -17,22 +17,24 @@ exports.create = function(url) {
 
 };
 
-exports.fetch = function(lengthOffset, callback) {
+exports.fetch = function(lengthOffset, callback, noResultsCallback) {
     db.crawler.find({ind_visited: false}).limit(lengthOffset).exec(function(err, results) {
         if (err) throw err;
+
+        if (results.length == 0) {
+            return noResultsCallback();
+        }
 
         var ids = results.map(function(value) {
             return value._id;
         });
 
-        db.crawler.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true }, function(err, updated) {
-            if (err) throw err;
-
-            for (var i = 0; i < results.length; i++) {
-                callback(results[i].url);
-            }
-        });
+        db.crawler.collection.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true, {writeConcern: {w: 0}} });
         
+        for (var i = 0; i < results.length; i++) {
+            callback(results[i].url);
+        }
+
     });
     
 };
