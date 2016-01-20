@@ -4,13 +4,13 @@ var Arr = require('./../array');
 
 var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
-exports.create = function(url) {
+exports.create = function(urls) {
 
-    var insertObj = {
-        url: url
-    };
+    var insertObjs = urls.map(function(url) {
+        return {url: url, ind_visited: false};
+    });
 
-    db.crawler.collection.insert(insertObj, {
+    db.crawler.collection.insert(insertObjs, {
         writeConcern: {w: 0},
         ordered: false
     });

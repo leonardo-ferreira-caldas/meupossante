@@ -14,6 +14,8 @@ var CrawlerCallback = function (error, result, $) {
     result.uri = CrawlerController.normalizeUrl(result.uri);
     console.log(result.uri);
 
+    var urls = [];
+
     $('a').each(function(index, a) {
         var url = $(a).attr('href');
 
@@ -21,11 +23,16 @@ var CrawlerCallback = function (error, result, $) {
 
         url = CrawlerController.normalizeUrl(url);
 
-        CrawlerController.create(url);
+        if (!~urls.indexOf(url)) {
+            urls.push(url);
+        }
 
         url = null;
 
     });
+
+    CrawlerController.create(urls);
+    urls = [];
 
     console.log("Terminou iteração de Links!");
 
