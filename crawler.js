@@ -34,8 +34,6 @@ var CrawlerCallback = function (error, result, $) {
     CrawlerController.create(urls);
     urls = [];
 
-    console.log("Terminou iteração de Links!");
-
     CarroController.ifIsCarAndNotExists(result.uri, function() {
         CrawlerProvider.get(result.uri, db, $, function(json) {
             CarroController.create(json);
@@ -46,8 +44,6 @@ var CrawlerCallback = function (error, result, $) {
 };
 
 var CrawlerDrained = function() {
-
-    console.log("Executou drained!");
 
     c = null;
 
@@ -66,7 +62,6 @@ var CrawlerDrained = function() {
             timeout: 5000
         });
     }, function() {
-        console.log("Executou drained no results callback!");
         setTimeout(CrawlerDrained, 500);
     });
 
