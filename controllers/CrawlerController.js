@@ -29,7 +29,7 @@ exports.fetch = function(lengthOffset, callback, noResultsCallback) {
             return value._id;
         });
 
-        db.crawler.collection.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true, {writeConcern: {w: 0}} });
+        db.crawler.collection.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true, writeConcern: {w: 0} });
         
         for (var i = 0; i < results.length; i++) {
             callback(results[i].url);
