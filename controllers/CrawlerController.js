@@ -4,16 +4,16 @@ var Arr = require('./../array');
 
 var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
-exports.create = function(foundUrls, callback) {
+exports.create = function(url) {
 
-    db.crawler.create(foundUrls.map(function(value) {
-        return {url: value};
-    }, function(err, result) {
+    var insertObj = {
+        url: url
+    };
 
-        foundUrls = null;
-        callback();
-
-    }));
+    db.crawler.collection.insert(insertObj, {
+        writeConcern: {w: 0},
+        ordered: false
+    });
 
 };
 
@@ -24,7 +24,6 @@ exports.fetch = function(lengthOffset, callback) {
         var ids = results.map(function(value) {
             return value._id;
         });
-
 
         db.crawler.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true }, function(err, updated) {
             if (err) throw err;

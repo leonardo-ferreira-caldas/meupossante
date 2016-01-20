@@ -4,7 +4,6 @@ var db              = require('./schema');
 var CrawlerProvider = require('./crawler_provider');
 var CrawlerController = require('./controllers/CrawlerController');
 var CarroController   = require('./controllers/CarroController');
-var found = [];
 var maxConnections = 15;
 
 var CrawlerCallback = function (error, result, $) {
@@ -21,9 +20,7 @@ var CrawlerCallback = function (error, result, $) {
 
         url = CrawlerController.normalizeUrl(url);
 
-        if (found.indexOf(url) === -1) {
-            found.push(url);
-        }
+        CrawlerController.create(url);
 
         url = null;
 
@@ -40,28 +37,22 @@ var CrawlerCallback = function (error, result, $) {
 
 var CrawlerDrained = function() {
 
-    CrawlerController.create(found, function() {
+    c = null;
 
-        found = [];
+    c = new Crawler({
+        maxConnections : maxConnections,
+        skipDuplicates: true,
 
-        c = null;
+        onDrain: CrawlerDrained,
 
-        c = new Crawler({
-            maxConnections : maxConnections,
-            skipDuplicates: true,
+        callback: CrawlerCallback
+    });
 
-            onDrain: CrawlerDrained,
-
-            callback: CrawlerCallback
+    CrawlerController.fetch(100, function(url) {
+        c.queue({
+            url: url,
+            timeout: 5000
         });
-
-        CrawlerController.fetch(100, function(url) {
-            c.queue({
-                url: url,
-                timeout: 5000
-            });
-        });
-
     });
 
 };
