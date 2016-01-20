@@ -54,7 +54,7 @@ var CrawlerDrained = function() {
             url: url,
             timeout: 5000
         });
-    }, callback() {
+    }, function() {
         setTimeout(CrawlerDrained, 500);
     });
 
