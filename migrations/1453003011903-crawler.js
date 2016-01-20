@@ -3,6 +3,7 @@
 var db = require('./../schema');
 
 exports.up = function(next) {
+    db.crawler.collection.createIndex({ "url": "text" }, { unique: true });
     next();
 };
 
