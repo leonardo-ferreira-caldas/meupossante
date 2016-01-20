@@ -7,12 +7,11 @@ var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 exports.create = function(urls) {
 
     var insertObjs = urls.map(function(url) {
-        return {url: url, ind_visited: false};
+        return {url: url};
     });
 
-    db.crawler.collection.insert(insertObjs, {
-        writeConcern: {w: 0},
-        ordered: false
+    db.crawler.create(insertObjs function(err) {
+        if (err) throw err;
     });
 
 };
@@ -29,12 +28,14 @@ exports.fetch = function(lengthOffset, callback, noResultsCallback) {
             return value._id;
         });
 
-        db.crawler.collection.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true, writeConcern: {w: 0} });
-        
+        db.crawler.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true }, function(err, results) {
+            if (err) throw err;
+        });
+
         for (var i = 0; i < results.length; i++) {
             callback(results[i].url);
         }
-
+        
     });
     
 };
