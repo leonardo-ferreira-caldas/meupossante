@@ -4,38 +4,34 @@ var Arr = require('./../array');
 
 var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 
-exports.create = function(urls) {
+exports.create = function(url) {
 
-    var insertObjs = urls.map(function(url) {
-        return {url: url};
-    });
-
-    db.crawler.create(insertObjs function(err) {
-        if (err) throw err;
-    });
+    try {
+        db.crawler.collection.insert({u: url, v: false});
+    } catch (err) {}
 
 };
 
-exports.fetch = function(lengthOffset, callback, noResultsCallback) {
-    db.crawler.find({ind_visited: false}).limit(lengthOffset).exec(function(err, results) {
+exports.fetch = function(lengthOffset, callback) {
+    db.crawler.find({v: false}).limit(lengthOffset).exec(function(err, results) {
         if (err) throw err;
 
         if (results.length == 0) {
-            return noResultsCallback();
+            return;
         }
 
         var ids = results.map(function(value) {
             return value._id;
         });
 
-        db.crawler.update({_id: {$in: ids}}, {ind_visited: true}, { multi: true }, function(err, results) {
+        db.crawler.update({_id: {$in: ids}}, {v: true}, { multi: true }, function(err, updated) {
             if (err) throw err;
+
+            for (var i = 0; i < results.length; i++) {
+                callback(results[i].u);
+            }
         });
 
-        for (var i = 0; i < results.length; i++) {
-            callback(results[i].url);
-        }
-        
     });
     
 };
@@ -44,13 +40,15 @@ exports.isValidUrl = function(url) {
     return regUrl.test(url);
 };
 
-exports.normalizeUrl = function(url) {
+exports.sanitizeUrl = function(url) {
     var stringsToRemove = [
         "https://www.webmotors.com.br/anunciante/login?action=salvaranuncio&returnUrl=",
         "http://www.webmotors.com.br/anunciante/login?action=salvaranuncio&returnUrl=",
         "https://www.webmotors.com.br/anunciante/login?action=login&returnUrl=",
         "http://www.webmotors.com.br/anunciante/login?action=login&returnUrl=",
-        ":80"
+        ":80",
+        "http://www.webmotors.com.br",
+        "http://webmotors.com.br"
     ];
 
     for (var i = 0; i < stringsToRemove.length; i++) {
@@ -58,4 +56,8 @@ exports.normalizeUrl = function(url) {
     }
 
     return url;
+};
+
+exports.normalizeUrl = function(url) {
+    return "http://www.webmotors.com.br" + url;
 };

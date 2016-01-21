@@ -4,35 +4,26 @@ var db              = require('./schema');
 var CrawlerProvider = require('./crawler_provider');
 var CrawlerController = require('./controllers/CrawlerController');
 var CarroController   = require('./controllers/CarroController');
-var maxConnections = 15;
+var maxConnections = 20;
 var c = null;
 
 var CrawlerCallback = function (error, result, $) {
         
     if (error || $ == undefined || !result.uri) return;
 
-    result.uri = CrawlerController.normalizeUrl(result.uri);
+    result.uri = CrawlerController.sanitizeUrl(result.uri);
     console.log(result.uri);
-
-    var urls = [];
 
     $('a').each(function(index, a) {
         var url = $(a).attr('href');
 
         if (!CrawlerController.isValidUrl(url)) return;
 
-        url = CrawlerController.normalizeUrl(url);
+        url = CrawlerController.compress(url);
 
-        if (!~urls.indexOf(url)) {
-            urls.push(url);
-        }
-
-        url = null;
+        CrawlerController.create(url);
 
     });
-
-    CrawlerController.create(urls);
-    urls = [];
 
     CarroController.ifIsCarAndNotExists(result.uri, function() {
         CrawlerProvider.get(result.uri, db, $, function(json) {
@@ -56,13 +47,11 @@ var CrawlerDrained = function() {
         callback: CrawlerCallback
     });
 
-    CrawlerController.fetch(100, function(url) {
+    CrawlerController.fetch(200, function(url) {
         c.queue({
-            url: url,
+            url: CrawlerController.normalizeUrl(url),
             timeout: 5000
         });
-    }, function() {
-        setTimeout(CrawlerDrained, 500);
     });
 
 };
