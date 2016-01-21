@@ -19,7 +19,7 @@ var CrawlerCallback = function (error, result, $) {
 
         if (!CrawlerController.isValidUrl(url)) return;
 
-        url = CrawlerController.compress(url);
+        url = CrawlerController.sanitizeUrl(url);
 
         CrawlerController.create(url);
 

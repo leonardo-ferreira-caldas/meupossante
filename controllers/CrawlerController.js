@@ -40,6 +40,11 @@ exports.isValidUrl = function(url) {
     return regUrl.test(url);
 };
 
+// exports.compress = function(url) {
+//     url = this.sanitizeUrl
+
+// };
+
 exports.sanitizeUrl = function(url) {
     var stringsToRemove = [
         "https://www.webmotors.com.br/anunciante/login?action=salvaranuncio&returnUrl=",
