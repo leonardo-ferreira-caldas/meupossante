@@ -7,13 +7,7 @@ var regUrl = new RegExp(".*(http:\/\/)(www\.webmotors|webmotors)\.com\.br.*");
 exports.create = function(url) {
 
     try {
-        db.crawler.collection.findAndModify({
-          query: { u: url },
-          update: {
-            $setOnInsert: {u: url, v: false}
-          },
-          upsert: true
-        });
+        db.crawler.collection.insert({u: url, v: false});
     } catch (err) {}
 
 };
