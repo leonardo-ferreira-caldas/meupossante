@@ -61,7 +61,7 @@ var Crawler = mongoose.model('crawler', new Schema({
     v: { type: Boolean, default: false }
 }, { collection: 'crawler' }));
 
-Crawler.collection.createIndex({u: :"hashed"}, {unique: true});
+Crawler.collection.createIndex({u: "hashed"}, {unique: true});
 
 var Cambio = mongoose.model('cambio', new Schema({
     descricao: { type: String, required: true, trim: true }
