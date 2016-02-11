@@ -1,31 +1,18 @@
-var http = require('http');
-var c = Date.now();
-var finished = 0;
+var unirest = require('unirest');
+var counter = 0;
+var max = 3000;
+var timestamp = Date.now();
 
-http.globalAgent.maxSockets = 9999;
+for (var i = 1; i <= max; i++) {
 
-for (var i = 0; i < 1000; i++) {
+    unirest.get('http://google.com')
+        .end(function (response) {
+            counter++;
 
-    http.get({
-        host: 'google.com',
-        path: '/',
-        agent: false,
-        port: 80
-    }, function (response) {
-        // Continuously update stream with data
-        var body = '';
-        response.on('data', function (d) {
-            body += d;
-        });
-        response.on('end', function () {
-
-            finished++;
-
-            if (finished == 1000) {
-                console.log(Date.now() - c);
+            if (counter == max) {
+                var totalTime =  Date.now() - timestamp;
+                console.log('Requests %s, Avg Per Request: %s, Total time: %s', max, (totalTime / max), totalTime);
             }
-
         });
-    });
 
 }
