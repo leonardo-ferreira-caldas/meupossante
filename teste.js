@@ -2,6 +2,8 @@ var http = require('http');
 var c = Date.now();
 var finished = 0;
 
+http.globalAgent.maxSockets = 9999;
+
 for (var i = 0; i < 1000; i++) {
 
     http.get({
