@@ -1,6 +1,6 @@
 var unirest = require('unirest');
 var counter = 0;
-var max = 3000;
+var max = 1000;
 var timestamp = Date.now();
 
 for (var i = 1; i <= max; i++) {
