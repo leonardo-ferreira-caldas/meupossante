@@ -5,7 +5,7 @@ var finished = 0;
 for (var i = 0; i < 1000; i++) {
 
     http.get({
-        host: 'google.com.br',
+        host: 'google.com',
         path: '/',
         agent: false,
         port: 80
