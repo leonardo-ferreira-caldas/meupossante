@@ -1,12 +1,19 @@
 var unirest = require('unirest');
 var counter = 0;
-var max = 1000;
+var max = 1;
 var timestamp = Date.now();
+var regexURL = /<a(.+)href=(\'|\")([a-zA-Z0-9\s\.\\\/\:\&\?\%\-\=\;]+)(\"|\')/igm;
+var matches;
 
 for (var i = 1; i <= max; i++) {
 
-    unirest.get('http://google.com')
+    unirest.get('http://webmotors.com.br')
         .end(function (response) {
+
+            while ((matches = regexURL.exec(response.body)) !== null) {
+                console.log(matches[3]);
+            }
+
             counter++;
 
             if (counter == max) {
