@@ -2,11 +2,11 @@ var unirest = require('unirest');
 
 var regexURL = /<a(.+)href=(\'|\")([a-zA-Z0-9\s\.\\\/\:\&\?\%\-\=\;]+)(\"|\')/igm;
 
-exports.extract = function(url, callback) {
-    
-    unirest.get(url)
+exports.extract = function(uri, callback) {
+
+    unirest.get(uri)
         .end(function (response) {
-            
+
             var matches;
             var extracted = [];
 
@@ -14,9 +14,9 @@ exports.extract = function(url, callback) {
                 extracted.push(matches[3]);
             }
 
-            callback(extracted);
-        
-            
+            callback(uri, extracted);
+
+
         });
-    
+
 };

@@ -1,12 +1,13 @@
 var ObjectMerger = require('./object_merger');
 var Url = require('url');
 var Extracter = require("./extracter");
+var Compacter = require("./compacter");
 
 module.exports = function(url, options) {
     var defaults = {
         connectionPoolSize: 10,
         flushSize: 100,
-        triggerAlmostDoneWith: 10, 
+        triggerAlmostDoneWith: 10,
         keepQueueOnMemory: false,
         avoidDuplicates: false,
         almostDone: null,
@@ -14,33 +15,51 @@ module.exports = function(url, options) {
         needsFlushing: null,
         afterVisit: null
     };
-    
+
     this.url = Url.parse(url);
     this.options = ObjectMerger.merge(defaults, options);
-    this.queue = [];
-    this.found = [];
-    this.populateIndex = 0;
-    this.pooling = 0;
+
+    this.waitingToProcess = [];
+    this.waitingToProcessLength = 0;
+
+    this.processing = [];
+    this.processingLength = 0;
+
+    this.processed = [];
+    this.processedLength = 0;
+
     this.timer = Date.now();
-    this.visited = 0;
-    
+
     this._init = function() {
-        if (this.queue.length == 0) {
-            this.queue = [this.url.href];
+        if (this.waitingToProcessLength == 0) {
+            this._addToProcessList('/');
         }
     };
-    
-    this._inMemory = function(url) {
-        return this.found.indexOf(url) > -1;
+
+    this._inMemory = function(uri) {
+        return this.waitingToProcess[uri] || this.processing[uri] || this.processed[uri];
     };
-    
-    this._found = function(link) {
-        this.found.push(link);
+
+    this._addToProcessList = function(uri) {
+        this.waitingToProcess[uri] = 1;
+        this.waitingToProcessLength++;
     };
-    
+
+    this._processing = function(uri) {
+        this.processing[uri] = 1;
+        this.processingLength++;
+    };
+
+    this._processed = function(uri) {
+        this.processed[uri] = 1;
+        this.processedLength++;
+        this.processingLength--;
+        delete this.processing[uri];
+    };
+
     this._isValidLink = function(link) {
         var parsed = Url.parse(link);
-        
+
         if (parsed.protocol != null && parsed.hostname != null) {
             var wwwHost = "www." + this.url.hostname.replace("www.", "");
             if (parsed.hostname != this.url.hostname && parsed.hostname != wwwHost) {
@@ -54,86 +73,89 @@ module.exports = function(url, options) {
                 }
             }
         }
-        
+
         return true;
     };
-    
+
     this._add = function(list) {
         if (typeof list == 'string') list = [list];
-        
+
         for (var i = 0; i < list.length; i++) {
-            if (!this._inMemory(list[i]) && this._isValidLink(list[i])) {
-                this._found(list[i]);
+            var compacted = Compacter.compact(list[i]);
+
+            if (this._isValidLink(list[i]) && !this._inMemory(compacted)) {
+                this._addToProcessList(compacted);
             }
         }
     };
-    
-    this._getPoolEmptySize = function() {
-        return this.options.connectionPoolSize - this.queue.length;
-    };
-    
-    this._pushToQueue = function(list) {
-        for (var i = 0; i < list.length; i++) {
-            this.queue.push(list[i]);
-        }
-    }
-    
-    this._populate = function() {
-        var offset = this._getPoolEmptySize();
-        var currentFoundSize = this.found.length - this.populateIndex;
-        
-        if (currentFoundSize < offset) {
-            offset = currentFoundSize;
-        }
-        
-        var offsetEnd = offset + this.populateIndex;
-        
-        this._pushToQueue(this.found.slice(this.populateIndex, offsetEnd));
-        this.populateIndex += offset; 
-    };
-    
+
     this._provider = function() {
-        return this.queue.splice(0, this.queue.length);
+        var provider = [];
+        var offsetControl = this.options.connectionPoolSize - this.waitingToProcess.length;
+
+        for (var url in this.waitingToProcess) {
+            if (offsetControl == 0) {
+                break;
+            }
+
+            provider.push(url);
+            delete this.waitingToProcess[url];
+            this.waitingToProcessLength--;
+
+            offsetControl--;
+        }
+
+        return provider;
     };
-    
+
     this._checkPoolSize = function() {
         var pct = this.options.connectionPoolSize * 0.9;
-        
-        if (this.pooling < pct) {
-            var time = Date.now() - this.timer;
-            console.log('Found %s, Queue: %s, Pool: %s, Time: %s, Visited: %s', this.found.length, this.queue.length, this.pooling, time, this.visited);
-            this._populate();
+
+        if (this.processingLength < pct) {
+            this._log();
             this._crawl();
         }
     };
-    
+
     this._crawl = function() {
         var urls = this._provider();
-      
+
         for (var i = 0; i < urls.length; i++) {
-            this.pooling++;
-            
-            Extracter.extract(urls[i], function(extractedUrls) {
-                this.pooling--;
-                this.visited++;
+            var uncompacted = Compacter.uncompact(urls[i]);
+
+            this._processing(urls[i]);
+
+            Extracter.extract(uncompacted, function(uncompactedURI, extractedUrls) {
+                this._processed(Compacter.compact(uncompactedURI));
+
                 this._add(extractedUrls);
                 this._checkPoolSize();
             }.bind(this));
         }
-        
+
         return null;
     };
 
-   
+
+    this._log = function() {
+        // if (this.visited < this.options.connectionPoolSize) return;
+
+        var time = Date.now() - this.timer;
+        var avg = time / this.options.connectionPoolSize;
+        this.timer = Date.now();
+
+        console.log('Waiting to process: %s, Processing: %s, Processed: %s, Avg Time: %s, Time: %s!', this.waitingToProcessLength, this.processingLength, this.processedLength, avg, time);
+    };
+
     this.run = function() {
         try {
-           
+
             this._init();
             this._crawl();
-        
+
         } catch (err) {
-           console.log("Um erro ocorreu:\n%s", err);
-        }   
+            console.log("Um erro ocorreu:\n%s", err);
+        }
     };
 };
 
