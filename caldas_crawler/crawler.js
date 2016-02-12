@@ -22,6 +22,7 @@ module.exports = function(url, options) {
     this.populateIndex = 0;
     this.pooling = 0;
     this.timer = Date.now();
+    this.visited = 0;
     
     this._init = function() {
         if (this.queue.length == 0) {
@@ -100,7 +101,7 @@ module.exports = function(url, options) {
         
         if (this.pooling < pct) {
             var time = Date.now() - this.timer;
-            console.log('Found %s, Queue: %s, Pool: %s, Time: %s', this.found.length, this.queue.length, this.pooling, time);
+            console.log('Found %s, Queue: %s, Pool: %s, Time: %s, Visited: %s', this.found.length, this.queue.length, this.pooling, time, this.visited);
             this._populate();
             this._crawl();
         }
@@ -114,6 +115,7 @@ module.exports = function(url, options) {
             
             Extracter.extract(urls[i], function(extractedUrls) {
                 this.pooling--;
+                this.visited++;
                 this._add(extractedUrls);
                 this._checkPoolSize();
             }.bind(this));
