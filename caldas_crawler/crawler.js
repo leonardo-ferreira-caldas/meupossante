@@ -21,6 +21,7 @@ module.exports = function(url, options) {
     this.found = [];
     this.populateIndex = 0;
     this.pooling = 0;
+    this.timer = Date.now();
     
     this._init = function() {
         if (this.queue.length == 0) {
@@ -98,7 +99,8 @@ module.exports = function(url, options) {
         var pct = this.options.connectionPoolSize * 0.9;
         
         if (this.pooling < pct) {
-            console.log('Found %s, Queue: %s, Pool: %s', this.found.length, this.queue.length, this.pooling);
+            var time = Date.now() - this.timer;
+            console.log('Found %s, Queue: %s, Pool: %s, Time: %s', this.found.length, this.queue.length, this.pooling, time);
             this._populate();
             this._crawl();
         }
