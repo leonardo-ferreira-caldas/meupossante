@@ -1,7 +1,7 @@
 var Crawler = require("./caldas_crawler/crawler");
 
 var bot = new Crawler('http://webmotors.com.br', {
-    connectionPoolSize: 500,
+    connectionPoolSize: 1000,
     flushSize: 50000,
 
     triggerAlmostDoneWith: 30,
